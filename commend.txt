@@ -1,0 +1,189 @@
+Step-1
+sudo apt-get update -y
+init 6  //( will restart )//
+
+Step-2 //Install Python//
+sudo apt-get install python3-dev python3.11-dev python3-setuptools python3-pip python3-distutils software-properties-common xvfb libfontconfig wkhtmltopdf libmysqlclient-dev -y
+
+Step-3 //Install Virtual Enviroment//
+sudo apt-get install python3.11-venv -y
+sudo apt install python-is-python3 -y
+python3 -V //( result Python 3.11.X )
+python -V //(resulat Python 3.11.X )
+
+Step-4 // Install Curl//
+sudo apt install curl 
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.profile
+
+Step-5 // Install NODE & Redis Server//
+curl -sL https://deb.nodesource.com/setup_20.x | bash -
+nvm install 20
+node --version //( result must be : v20.XXX )
+node -v
+npm -v
+
+sudo apt-get install -y nodejs
+sudo apt-get install nodejs redis-server -y
+sudo apt-get install cron git -y
+node --version //( result must be : v20.XXX )
+
+Step-6 // Install NPM & Yarn //
+sudo apt-get install npm
+sudo npm install -g yarn
+npm --version //( result must be : 9.XX.X )
+yarn --version
+
+Step-7 //Install Mariadb
+sudo apt-get install mariadb-server mariadb-client -y //install the Latest Version//
+---OR---
+sudo apt-get install mariadb-server=10.6 mariadb-client=10.6 -y // Version Above 10.8 is not Tested
+mariadb --version //( result must be mariadb Ver 15.1 Distrib 10.6.7-MariaDB, )
+
+Step-8 //Set Mariadb security//
+sudo mysql_secure_installation
+
+//Enter current password for root (enter for none): Press your [Enter] key, there is no password set by default
+//Switch to unix_socket authentication N
+//Set root password? [Y/n] Y
+//New password:
+//Re-enter new password:
+//Remove anonymous users? [Y/n] Y
+//Disallow root login remotely? [Y/n] N
+//Remove test database and access to it? [Y/n] Y
+//Reload privilege tables now? [Y/n] Y
+
+//Set Mariadb formats.
+
+Step-9 // Setup the Server//
+vim /etc/mysql/mariadb.conf.d/erpnext.cnf //Not Working//
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+//Add in CNF FILE// CTRL+S & CTRL+X//
+
+[mysqld]
+innodb-file-format=barracuda
+innodb-file-per-table=1
+innodb-large-prefix=1
+character-set-client-handshake = FALSE
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+[mysql]
+default-character-set = utf8mb4
+
+// Restart SQL//
+systemctl restart mariadb
+-------------------------------------
+Step-10 // Create User//
+//Create a user "erpnext"
+//Set password,
+//Set usermod,
+//Set sudo prvilege.
+useradd -m -s /bin/bash erpnext
+passwd erpnext
+usermod -aG sudo erpnext
+su - erpnext
+//Now you are inside the new user. Now let us set it's path.
+vim ~/.bashrc
+//add this line
+PATH=$PATH:~/.local/bin/
+source ~/.bashrc
+
+su - erpnext
+sudo mkdir /opt/bench
+sudo chown -R erpnext:erpnext /opt/bench
+cd /opt/bench
+---------------------------------------
+  
+Step-11 // Install node-sass //
+yarn add node-sass
+yarn --version //( result must be:1.22.19 )
+
+____________________________________________________
+//Now we are entering to Frappe installation. Before that finish all the following tests ( in violet letters ) . Otherwise installation will fail
+*****************************
+Step-12 //Check App Version//
+*****************************
+python -V //( result Python 3.11.4 )
+node --version //( result must be : v20.17.0 )
+npm --version //( result must be : 9.8.1 )
+mariadb --version //( result must be mariadb Ver 15.1 Distrib 10.6.7-MariaDB, )
+yarn --version //( result must be:1.22.19 )
+/opt/bench/node_modules/.bin/node-sass -v 
+//( result must be: node-sass	9.0.1	(Wrapper)	[JavaScript] libsass 3.5.5	(Sass Compiler)	[C/C++] )
+npm node-sass -v //( Result must be: 9.8.1 )
+pip3 -V //( Result must be pip 23.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10) )
+pip -V //(Result must be pip 23.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10) )
+pip3 --version //( Result must be pip 23.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10) )
+pip --version //( Result must be pip 23.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10) )
+redis-server --version //(Redis server v=7.0.16 sha=00000000:0 malloc=jemalloc-5.2.1 bits=64 build=a3fdef44459b3ad6)
+wkhtmltopdf -V //( wkhtmltopdf 0.12.6 )
+git -v //(git version 2.39.1)
+***************************************
+  
+Step-13 //INSTALL VIRTUAL ENVIROMENT//
+// Virtual Enviroment Error Managements//
+//"This environment is externally managed" in that case, either use following command, or use pipx//
+______________________________________
+//Virtual Enviroment Chat GPT advise//
+//Remember, you'll need to activate this virtual environment every time you work on your project.//
+______________________________________
+sudo apt install pipx
+pipx install frappe-bench
+
+python3 -m venv myenv
+source myenv/bin/activate
+pip install frappe-bench
+pip3 install frappe-bench
+
+Step-14 //INSTALL FRAPPE-BENCH//
+bench init frappe-bench --frappe-branch version-15-beta
+cd frappe-bench
+sed -i '/web:/ s/$/ --noreload/' Procfile
+pip3 install honcho
+bench start
+
+Step-15 //Install New Site//
+bench new-site site1.local
+bench use site1.local
+
+Step-16 //Install ERPNext Version-15//
+bench get-app erpnext --branch version-15-beta
+bench get-app payments --branch version-15-beta
+bench --site site1.local install-app erpnext 
+
+Step-17 //Install HRMS Version-15//
+bench get-app hrms --branch version-15
+bench get-app hrms //if Above Not Work//
+bench --site site1.local install-app hrms 
+
+Step-18 //Install LENDING / Loan//
+bench get-app lending
+bench --site site1.local install-app lending
+
+-------------------------
+// IF ERROR AFTER HRM INSTALLATION//
+bench update --reset
+ 
+//IF ERROR Updating...//
+//Disable maintenance mode
+bench --site site1.local set-maintenance-mode off
+-------------------------
+
+Step-19 //Install CHAT //
+bench get-app chat
+bench --site site1.local install-app chat
+
+Note:- To Start Bench
+source myenv/bin/activate
+cd frappe-bench
+bench start
+
+//Now you have ERPNext on port 8000. ( http://0.0.0.0:8000 )
+                                     (IP_Address:8000) 
+//You can run the setup-wizard on the browser.
+
+User Name: administrator
+Pasword: What you Enter During Installation
+open_in_new MORE content_copy COPY
+@Taimoor at thiscodeWorks.com
