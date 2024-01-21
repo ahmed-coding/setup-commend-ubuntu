@@ -39,7 +39,7 @@ sudo apt-get install mariadb-server mariadb-client -y //install the Latest Versi
 ---OR---
 sudo apt-get install mariadb-server=10.6 mariadb-client=10.6 -y // Version Above 10.8 is not Tested
 mariadb --version //( result must be mariadb Ver 15.1 Distrib 10.6.7-MariaDB, )
-
+                                                                                                                                                                                                                                                                                                    
 Step-8 //Set Mariadb security//
 sudo mysql_secure_installation
 

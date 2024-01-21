@@ -20,3 +20,10 @@ sudo npm install -g yarn
 npm --version 
 yarn --version
 yarn add node-sass
+
+sudo apt install pipx
+pipx install frappe-bench
+pip3 install frappe-bench
+pip3 install honcho
+
+bench init frappe-bench --frappe-branch version-15
